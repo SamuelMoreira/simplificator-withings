@@ -15,19 +15,21 @@ class Withings::Connection
   end
 
   def self.get_request(path, token, secret, params)
+    binding.pry
     signature = Withings::Connection.sign(base_uri + path, params, token, secret)
     params.merge!({:oauth_signature => signature})
-    binding.pry
+
     response = self.get(path, :query => params)
     verify_response!(response, path, params)
   end
 
 
   def get_request(path, params)
+    binding.pry
     params.merge!({:userid => @user.user_id})
     signature = Withings::Connection.sign(self.class.base_uri + path, params, @user.oauth_token, @user.oauth_token_secret)
     params.merge!({:oauth_signature => signature})
-    binding.pry
+
     response = self.class.get(path, :query => params)
     self.class.verify_response!(response, path, params)
   end
@@ -35,6 +37,7 @@ class Withings::Connection
   protected
   
   def self.sign(url, params, token, secret)
+    binding.pry
     params.merge!({
       :oauth_consumer_key => Withings.consumer_key,
       :oauth_nonce => oauth_nonce,
@@ -65,6 +68,7 @@ class Withings::Connection
   
   def self.calculate_oauth_signature(method, url, params, oauth_token_secret)
     # oauth signing is picky with sorting (based on a digest)
+    binding.pry
     params = params.to_a.map() do |item| 
       [item.first.to_s, CGI.escape(item.last.to_s)]
     end.sort
